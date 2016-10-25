@@ -15,8 +15,9 @@ class Chip {
   final SyntaxNodeInfo info;
   final PinList inPins;
   final PinList outPins;
+  final PinList internalPins;
   final Parts parts;
-  Chip(this.inPins, this.outPins, this.parts, {this.info});
+  Chip.compose(this.inPins, this.outPins, this.parts, {this.info});
 }
 
 class PinList {
@@ -25,11 +26,10 @@ class PinList {
   PinList(this.defs, {this.info});
 
   int get length => defs.length;
-  PinDef operator[](int index) => defs[index];
+  PinDef operator [](int index) => defs[index];
 }
 
-class PinDef
-{
+class PinDef {
   final SyntaxNodeInfo info;
   final int type;
   final Identifier nameToken;
@@ -38,8 +38,7 @@ class PinDef
       : type = 1,
         width = 1;
 
-  PinDef.bus(this.nameToken, this.width, {this.info})
-      : type = 2;
+  PinDef.bus(this.nameToken, this.width, {this.info}) : type = 2;
 
   String get name => nameToken.value;
   String get debugString => "";
@@ -49,6 +48,10 @@ class Parts {
   final SyntaxNodeInfo info;
   final List<Part> parts;
   Parts(this.parts, {this.info});
+
+  int get length => parts.length;
+
+  Part operator [](int index) => parts[index];
 
   String get debugString => "";
 }
@@ -69,25 +72,32 @@ class Connection {
   final PinRef chip;
   Connection(this.part, this.chip, {this.info});
 
+  String get partName => part.name;
+  String get chipName => chip.name;
+
   String get debugString => "${part.debugString}=${chip.debugString}";
 }
 
 class PinRef {
   final SyntaxNodeInfo info;
   final int type;
-  final Identifier name;
+  final Identifier nameToken;
   final int index1;
   final int index2;
-  PinRef.single(this.name, {this.info})
+  PinRef.single(this.nameToken, {this.info})
       : type = 1,
         index1 = -1,
         index2 = -1;
 
-  PinRef.indexed(this.name, this.index1, {this.info})
+  PinRef.indexed(this.nameToken, this.index1, {this.info})
       : type = 2,
         index2 = -1;
-  PinRef.subarray(this.name, this.index1, this.index2, {this.info})
-      : type = 3;
+  PinRef.subarray(this.nameToken, this.index1, this.index2, {this.info}) : type = 3;
+
+  String get name => nameToken.value;
+
+  int get width =>
+    type == 3 ? index2-index1+1:1;
 
   String get debugString => "";
 }

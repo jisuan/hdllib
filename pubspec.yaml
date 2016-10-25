@@ -8,3 +8,4 @@ homepage:     https://github.com/jisuan/hdllib
 environment:
   sdk:        '>=1.8.0 <2.0.0'
 dependencies:
+  test:       '>=0.12.0'
